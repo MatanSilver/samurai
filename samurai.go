@@ -8,6 +8,7 @@ import (
   "./utils"
   "./parser"
   "./geometry"
+  "./slicer"
 )
 
 func main() {
@@ -47,13 +48,13 @@ func main() {
         geometry.Render(model, c.String("render"))
       }
       if c.String("output") != "" {
-        /*var conf *utils.Config
+        var conf *utils.Config
         if c.String("config") != "" {
           conf = utils.LoadConfig(c.String("config"))
         } else {
           conf = defaultconf
-        }*/
-        //slicer.Slice(c.String("output"), model, conf)
+        }
+        slicer.Slice(c.String("output"), model, conf)
       }
     }
     return nil
