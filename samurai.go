@@ -2,8 +2,6 @@ package main
 
 import (
   "os"
-  "bufio"
-  "strings"
   "github.com/urfave/cli"
   "./utils"
   "./parser"
@@ -47,7 +45,7 @@ func main() {
       fmt.Printf("Config file generated\n")
     } else if c.String("file") != "" {
       fmt.Printf("Loading triangles from STL file...\n")
-      model := ImportSTL(c.String("file"))
+      model := parser.ImportSTL(c.String("file"))
       fmt.Printf("%v triangles loaded\n", len(model.Triangles))
       if c.String("render") != "" {
         fmt.Printf("Rendering image...\n")
@@ -67,22 +65,5 @@ func main() {
     return nil
   }
   app.Run(os.Args)
-}
-
-func ImportSTL(filename string) *(geometry.Model) {
-  file, err := os.Open(filename)
-  utils.Check(err)
-  defer file.Close()
-  scanner := bufio.NewScanner(file)
-  scanner.Scan()
-  firstln := scanner.Text()
-  var m *geometry.Model
-  if strings.Contains(firstln, "solid") {
-    m = parser.ParseASCIISTL(filename)
-  } else {
-    m = parser.ParseBinarySTL(filename)
-  }
-  //m.Print()
-  return m
 }
 

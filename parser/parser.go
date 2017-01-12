@@ -12,6 +12,23 @@ import (
   "../geometry"
 )
 
+func ImportSTL(filename string) *(geometry.Model) {
+  file, err := os.Open(filename)
+  utils.Check(err)
+  defer file.Close()
+  scanner := bufio.NewScanner(file)
+  scanner.Scan()
+  firstln := scanner.Text()
+  var m *geometry.Model
+  if strings.Contains(firstln, "solid") {
+    m = ParseASCIISTL(filename)
+  } else {
+    m = ParseBinarySTL(filename)
+  }
+  //m.Print()
+  return m
+}
+
 func ParseASCIISTL(filename string) *geometry.Model {
   file, err := os.Open(filename)
   utils.Check(err)
