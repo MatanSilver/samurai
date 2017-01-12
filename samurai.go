@@ -9,6 +9,7 @@ import (
   "./parser"
   "./geometry"
   "./slicer"
+  "fmt"
 )
 
 func main() {
@@ -41,11 +42,17 @@ func main() {
   app.Action = func(c *cli.Context) error {
     defaultconf := &utils.Config{LayerHeight: 0.2}
     if c.String("generate_config") != "" {
+      fmt.Printf("Generating config file...\n")
       utils.GenerateConfig(c.String("generate_config"), defaultconf)
+      fmt.Printf("Config file generated\n")
     } else if c.String("file") != "" {
+      fmt.Printf("Loading triangles from STL file...\n")
       model := ImportSTL(c.String("file"))
+      fmt.Printf("%v triangles loaded\n", len(model.Triangles))
       if c.String("render") != "" {
+        fmt.Printf("Rendering image...\n")
         geometry.Render(model, c.String("render"))
+        fmt.Printf("Image rendered\n")
       }
       if c.String("output") != "" {
         var conf *utils.Config
