@@ -11,10 +11,10 @@ type Config struct {
 func LoadConfig(filename string) *Config {
   //dat, err := ioutil.ReadFile(filename)
   dat, err := ioutil.ReadFile(filename)
-  check(err)
-  err := yaml.Marshal(conf)
+  Check(err)
   var conf Config
-  err := yaml.Unmarshal([]byte(dat), &conf)
+  err = yaml.Unmarshal([]byte(dat), &conf)
+  Check(err)
   return &conf
 }
 
