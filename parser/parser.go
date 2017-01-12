@@ -48,9 +48,9 @@ func ParseASCIISTL(filename string) *geometry.Model {
       vertices = append(vertices, VertexFloats)
     } else if strings.Contains(text, "endfacet") {
       //fmt.Printf("end facet\n")
-      triangles[len(triangles) - 1].Vertex1 = vertices[0]
-      triangles[len(triangles) - 1].Vertex2 = vertices[1]
-      triangles[len(triangles) - 1].Vertex3 = vertices[2]
+      triangles[len(triangles) - 1].Vertices[0] = vertices[0]
+      triangles[len(triangles) - 1].Vertices[1] = vertices[1]
+      triangles[len(triangles) - 1].Vertices[2] = vertices[2]
       vertices = nil
     } else if strings.Contains(text, "endsolid") {
       //fmt.Printf("end solid\n")
