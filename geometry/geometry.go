@@ -44,13 +44,23 @@ func (tri *Triangle) Print() {
 }
 
 func (tri *Triangle) IntersectsZ(zlevel float32) bool {
-  if (tri.Vertices[0][2] > zlevel && tri.Vertices[1][2] > zlevel && tri.Vertices[2][2] > zlevel) {
+  z1 := tri.Vertices[0][2]
+  z2 := tri.Vertices[1][2]
+  z3 := tri.Vertices[2][2]
+  if (z1 > zlevel && z2 > zlevel && z3 > zlevel) {
     return false
-  } else if (tri.Vertices[0][2] < zlevel && tri.Vertices[1][2] < zlevel && tri.Vertices[2][2] < zlevel) {
+  } else if (z1 < zlevel && z2 < zlevel && z3 < zlevel) {
     return false
-  } else if (tri.Vertices[0][2] == zlevel && tri.Vertices[1][2] == zlevel && tri.Vertices[2][2] == zlevel) {
+  } else if (z1 == zlevel && z2 == zlevel && z3 == zlevel) {
     return false
-  }
+  } else if (z1 == zlevel && z2 > zlevel && z3 > zlevel) ||
+  (z1 == zlevel && z2 < zlevel && z3 < zlevel) ||
+  (z2 == zlevel && z1 > zlevel && z3 > zlevel) ||
+  (z2 == zlevel && z1 < zlevel && z3 < zlevel) ||
+  (z3 == zlevel && z1 > zlevel && z3 > zlevel) ||
+  (z3 == zlevel && z1 < zlevel && z3 < zlevel) {
+      return false
+    }
   return true
 }
 
@@ -64,15 +74,18 @@ func (tri *Triangle) IntersectVectors(zlevel float32) (Vector, Vector) {
     return tri.Vertices[0], tri.Vertices[2]
   } else { // otherwise, calculate the two intersections parametrically (could do rref?)
     var va, vb, origin Vector
-    if (tri.Vertices[0][2] < zlevel && tri.Vertices[1][2] < zlevel) {
+    if (tri.Vertices[0][2] <= zlevel && tri.Vertices[1][2] <= zlevel && tri.Vertices[2][2] > zlevel) ||
+    (tri.Vertices[0][2] >= zlevel && tri.Vertices[1][2] >= zlevel && tri.Vertices[2][2] < zlevel) {
       va = tri.Vertices[0]
       vb = tri.Vertices[1]
       origin = tri.Vertices[2]
-    } else if (tri.Vertices[1][2] < zlevel && tri.Vertices[2][2] < zlevel) {
+    } else if (tri.Vertices[1][2] <= zlevel && tri.Vertices[2][2] <= zlevel && tri.Vertices[0][2] > zlevel) ||
+    (tri.Vertices[1][2] >= zlevel && tri.Vertices[2][2] >= zlevel && tri.Vertices[0][2] < zlevel) {
       va = tri.Vertices[1]
       vb = tri.Vertices[2]
       origin = tri.Vertices[0]
-    } else if (tri.Vertices[0][2] < zlevel && tri.Vertices[2][2] < zlevel){
+    } else if (tri.Vertices[0][2] <= zlevel && tri.Vertices[2][2] <= zlevel && tri.Vertices[1][2] > zlevel) ||
+    (tri.Vertices[0][2] >= zlevel && tri.Vertices[2][2] >= zlevel && tri.Vertices[1][2] < zlevel) {
       va = tri.Vertices[0]
       vb = tri.Vertices[2]
       origin = tri.Vertices[1]
