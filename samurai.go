@@ -13,7 +13,7 @@ import (
 
 func main() {
   defaultconfcopy := utils.DefaultConfig
-  defaultconf := &defaultconfcopy
+  conf := &defaultconfcopy
   app := cli.NewApp()
   app.Name = "samurai"
   app.Usage = "experimental stl slicer"
@@ -39,14 +39,20 @@ func main() {
           Name:   "save_layer_images",
           Usage:  "Save rendered images of each layer",
         },
+        cli.StringFlag{
+          Name:   "layer_height",
+          Usage:  "Set the slice layer height",
+        },
         cli.IntFlag{
           Name:   "extruder_temp",
           Usage:  "Set extruder temperature",
+          Destination:  &conf.ExtruderTemp,
         },
         cli.IntFlag{
           Name:   "bed_temp",
           Usage:  "Set bed temperature",
-        }
+          Destination:  &conf.BedTemp,
+        },
       },
       Action: func(c *cli.Context) error {
         if (c.String("file") == "") {
@@ -58,8 +64,6 @@ func main() {
         var conf *utils.Config
         if c.String("config") != "" { //load config from flag, or default config
           conf = utils.LoadConfig(c.String("config"))
-        } else {
-          conf = defaultconf
         }
         output_name := "output.gcode"
         if (c.String("output") != "") { //load name from flag, or default name
@@ -111,6 +115,16 @@ func main() {
           Name:   "layer_height",
           Usage:  "Set the slice layer height",
         },
+        cli.IntFlag{
+          Name:   "extruder_temp",
+          Usage:  "Set extruder temperature",
+          Destination:  &conf.ExtruderTemp,
+        },
+        cli.IntFlag{
+          Name:   "bed_temp",
+          Usage:  "Set bed temperature",
+          Destination:  &conf.BedTemp,
+        },
       },
       Action: func (c *cli.Context) error { //add ability to override defaults with flags
         output_name := "config.yaml"
@@ -118,7 +132,7 @@ func main() {
           output_name = c.String("output")
         }
         fmt.Printf("Generating config file...\n")
-        utils.GenerateConfig(output_name, &utils.Config{LayerHeight: 0.2})
+        utils.GenerateConfig(output_name, conf)
         fmt.Printf("Config file generated\n")
         return nil
       },
