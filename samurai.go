@@ -12,7 +12,8 @@ import (
 )
 
 func main() {
-  defaultconf := &utils.Config{LayerHeight: 0.2}
+  defaultconfcopy := utils.DefaultConfig
+  defaultconf := &defaultconfcopy
   app := cli.NewApp()
   app.Name = "samurai"
   app.Usage = "experimental stl slicer"
@@ -38,6 +39,14 @@ func main() {
           Name:   "save_layer_images",
           Usage:  "Save rendered images of each layer",
         },
+        cli.IntFlag{
+          Name:   "extruder_temp",
+          Usage:  "Set extruder temperature",
+        },
+        cli.IntFlag{
+          Name:   "bed_temp",
+          Usage:  "Set bed temperature",
+        }
       },
       Action: func(c *cli.Context) error {
         if (c.String("file") == "") {

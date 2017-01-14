@@ -27,3 +27,9 @@ func GenerateConfig(filename string, conf *Config) bool {
   Check(err)
   return true
 }
+
+var DefaultConfig Config = Config{
+  LayerHeight: 0.2,
+  BedTemp: 60,
+  ExtruderTemp: 220,
+}
