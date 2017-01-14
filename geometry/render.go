@@ -6,6 +6,7 @@ import (
   "github.com/llgcode/draw2d/draw2dimg"
   "image"
   "image/color"
+  //"gopkg.in/cheggaaa/pb.v1"
 
 )
 
@@ -25,22 +26,26 @@ func AddTriangleToScene(scene *ln.Scene, triangle *Triangle) {
 func Render(model *Model, filename string) {
 // create a scene and add a single cube
     scene := ln.Scene{}
+    //count := len(model.Triangles)
+    //bar := pb.StartNew(count)
     for key := range model.Triangles {
+      //bar.Increment()
       AddTriangleToScene(&scene, &model.Triangles[key])
     }
+    //bar.FinishPrint("Complete")
 
 
     // define camera parameters
-    eye := ln.Vector{0, 0, 300}    // camera position
+    eye := ln.Vector{200, 200, 200}    // camera position
     //center := ln.Vector{-300, -300, 0} // camera looks at
     target := model.GetTarget()
     center:= ln.Vector{float64(target[0]), float64(target[1]), float64(target[2])}
     up := ln.Vector{0, 0, 100}     // up direction
 
     // define rendering parameters
-    width := 2048.0  // rendered width
-    height := 2048.0 // rendered height
-    fovy := 30.0     // vertical field of view, degrees
+    width := 256.0  // rendered width
+    height := 256.0 // rendered height
+    fovy := 50.0     // vertical field of view, degrees
     znear := 0.1     // near z plane
     zfar := 700.0     // far z plane
     step := 0.01     // how finely to chop the paths for visibility testing
@@ -56,6 +61,7 @@ func Render(model *Model, filename string) {
 }
 
 func Save2DSlice(linelist []LineSegment, filename string) {
+  //fmt.Printf("%v\n", linelist)
   dest := image.NewRGBA(image.Rect(0, 0, 200, 200))
   gc := draw2dimg.NewGraphicContext(dest)
 
@@ -70,17 +76,20 @@ func Save2DSlice(linelist []LineSegment, filename string) {
 
 
   // Draw a closed shape
-  xoffset := 400.0
-  yoffset := 300.0
+  xoffset := 50.0
+  yoffset := 50.0
+  //fmt.Printf("%v\n", linelist)
   gc.MoveTo(float64(linelist[0].V1[0]) + xoffset, float64(linelist[0].V1[1]) + yoffset) // should always be called first for a new path
   gc.LineTo(float64(linelist[0].V2[0]) + xoffset, float64(linelist[0].V2[1]) + yoffset)
+  gc.Close()
   for key := range linelist[1:] {
     //gc.LineTo(linelist[key].V1[0], linelist[key].V1[1])
     gc.MoveTo(float64(linelist[key].V1[0]) + xoffset, float64(linelist[key].V1[1]) + yoffset)
     gc.LineTo(float64(linelist[key].V2[0]) + xoffset, float64(linelist[key].V2[1]) + yoffset)
+    gc.Close()
   }
 
-  gc.Close()
+
   gc.FillStroke()
   // Save to file
   draw2dimg.SaveToPngFile(filename, dest)

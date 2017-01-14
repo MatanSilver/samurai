@@ -16,6 +16,7 @@ func main() {
   app := cli.NewApp()
   app.Name = "samurai"
   app.Usage = "experimental stl slicer"
+  app.EnableBashCompletion = true
   app.Commands = []cli.Command{
     cli.Command{
       Name:   "slice",
