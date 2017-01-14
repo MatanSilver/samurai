@@ -12,14 +12,14 @@ import (
   "../geometry"
 )
 
-func ImportSTL(filename string) *(geometry.Model) {
+func ImportSTL(filename string) geometry.Model {
   file, err := os.Open(filename)
   utils.Check(err)
   defer file.Close()
   scanner := bufio.NewScanner(file)
   scanner.Scan()
   firstln := scanner.Text()
-  var m *geometry.Model
+  var m geometry.Model
   if strings.Contains(firstln, "solid") {
     m = ParseASCIISTL(filename)
   } else {
@@ -29,19 +29,19 @@ func ImportSTL(filename string) *(geometry.Model) {
   return m
 }
 
-func ParseASCIISTL(filename string) *geometry.Model {
+func ParseASCIISTL(filename string) geometry.Model {
   file, err := os.Open(filename)
   utils.Check(err)
   defer file.Close()
   scanner := bufio.NewScanner(file)
   var triangles []geometry.Triangle
-  var models []*geometry.Model
+  var models []geometry.Model
   var vertices []([3]float32)
   for scanner.Scan() {
     text := scanner.Text()
     if (strings.Contains(text, "solid") == true && strings.Contains(text, "endsolid") == false) {
       //fmt.Printf("new solid\n")
-      models = append(models, new(geometry.Model))
+      models = append(models, geometry.Model{})
     } else if strings.Contains(text, "facet normal") {
       //fmt.Printf("new facet normal\n")
       NormalStrings := strings.Split(strings.SplitAfter(text, "facet normal ")[1], " ")
@@ -79,7 +79,7 @@ func ParseASCIISTL(filename string) *geometry.Model {
   return models[0]
 }
 
-func ParseBinarySTL(filename string) *geometry.Model {
+func ParseBinarySTL(filename string) geometry.Model {
 
   // Reading entire STL file into memory
   data, err := ioutil.ReadFile(filename)
@@ -87,7 +87,7 @@ func ParseBinarySTL(filename string) *geometry.Model {
     panic(err)
   }
 
-  m := new(geometry.Model)
+  m := geometry.Model{}
 
   // Parsing Header first 80 bytes.
   err = binary.Read(bytes.NewBuffer(data[0:80]), binary.LittleEndian, &m.Header)

@@ -15,7 +15,7 @@ type  RenderPayload struct {
   Triangle *Triangle
 }
 
-func AddTriangleToScene(scene *ln.Scene, triangle *Triangle) {
+func AddTriangleToScene(scene *ln.Scene, triangle Triangle) {
   v1 := ln.Vector{float64(triangle.Vertices[0][0]), float64(triangle.Vertices[0][1]), float64(triangle.Vertices[0][2])}
   v2 := ln.Vector{float64(triangle.Vertices[1][0]), float64(triangle.Vertices[1][1]), float64(triangle.Vertices[1][2])}
   v3 := ln.Vector{float64(triangle.Vertices[2][0]), float64(triangle.Vertices[2][1]), float64(triangle.Vertices[2][2])}
@@ -23,14 +23,14 @@ func AddTriangleToScene(scene *ln.Scene, triangle *Triangle) {
 }
 
 
-func Render(model *Model, filename string) {
+func Render(model Model, filename string) {
 // create a scene and add a single cube
     scene := ln.Scene{}
     //count := len(model.Triangles)
     //bar := pb.StartNew(count)
     for key := range model.Triangles {
       //bar.Increment()
-      AddTriangleToScene(&scene, &model.Triangles[key])
+      AddTriangleToScene(&scene, model.Triangles[key])
     }
     //bar.FinishPrint("Complete")
 

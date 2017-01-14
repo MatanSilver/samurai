@@ -12,8 +12,7 @@ import (
 )
 
 func main() {
-  defaultconfcopy := utils.DefaultConfig
-  conf := &defaultconfcopy
+  conf := utils.DefaultConfig
   app := cli.NewApp()
   app.Name = "samurai"
   app.Usage = "experimental stl slicer"
@@ -58,18 +57,21 @@ func main() {
         if (c.String("file") == "") {
           return errors.New("The -f/--file flag is required")
         }
-        fmt.Printf("Loading triangles from STL file...\n")
+        fmt.Println("Loading triangles from STL file...")
         model := parser.ImportSTL(c.String("file"))
         fmt.Printf("%v triangles loaded\n", len(model.Triangles))
-        var conf *utils.Config
         if c.String("config") != "" { //load config from flag, or default config
+          fmt.Println("Loading config...")
           conf = utils.LoadConfig(c.String("config"))
+          fmt.Println("Config loaded")
         }
         output_name := "output.gcode"
         if (c.String("output") != "") { //load name from flag, or default name
           output_name = c.String("output")
         }
+        fmt.Println("Slicing model...")
         slicer.Slice(output_name, model, conf, c.Bool("save_layer_images"))
+        fmt.Println("Model sliced")
         return nil
       },
     },
