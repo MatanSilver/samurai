@@ -34,6 +34,10 @@ func main() {
           Name:   "output, o",
           Usage:  "Output gcode to `FILE`",
         },
+        cli.BoolFlag{
+          Name:   "save_layer_images",
+          Usage:  "Save rendered images of each layer",
+        },
       },
       Action: func(c *cli.Context) error {
         if (c.String("file") == "") {
@@ -52,7 +56,7 @@ func main() {
         if (c.String("output") != "") { //load name from flag, or default name
           output_name = c.String("output")
         }
-        slicer.Slice(output_name, model, conf)
+        slicer.Slice(output_name, model, conf, c.Bool("save_layer_images"))
         return nil
       },
     },

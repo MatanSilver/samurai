@@ -6,6 +6,8 @@ import (
 
 type Config struct {
   LayerHeight float32
+  BedTemp int
+  ExtruderTemp int
 }
 
 func LoadConfig(filename string) *Config {
