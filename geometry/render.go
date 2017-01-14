@@ -61,7 +61,6 @@ func Render(model Model, filename string) {
 }
 
 func Save2DSlice(linelist []LineSegment, filename string) {
-  //fmt.Printf("%v\n", linelist)
   dest := image.NewRGBA(image.Rect(0, 0, 200, 200))
   gc := draw2dimg.NewGraphicContext(dest)
 
@@ -70,22 +69,17 @@ func Save2DSlice(linelist []LineSegment, filename string) {
   gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
   gc.SetLineWidth(1)
 
-  //gc.MoveTo(10, 10) // should always be called first for a new path
-  //gc.LineTo(100, 50)
-  //gc.QuadCurveTo(100, 10, 10, 10)
-
-
-  // Draw a closed shape
   xoffset := 50.0
   yoffset := 50.0
-  //fmt.Printf("%v\n", linelist)
-  gc.MoveTo(float64(linelist[0].V1[0]) + xoffset, float64(linelist[0].V1[1]) + yoffset) // should always be called first for a new path
-  gc.LineTo(float64(linelist[0].V2[0]) + xoffset, float64(linelist[0].V2[1]) + yoffset)
+  xscale := 5.0
+  yscale := 5.0
+
+  gc.MoveTo(float64(linelist[0].V1[0])*xscale + xoffset, float64(linelist[0].V1[1])*yscale + yoffset) // should always be called first for a new path
+  gc.LineTo(float64(linelist[0].V2[0])*xscale + xoffset, float64(linelist[0].V2[1])*yscale + yoffset)
   gc.Close()
   for key := range linelist[1:] {
-    //gc.LineTo(linelist[key].V1[0], linelist[key].V1[1])
-    gc.MoveTo(float64(linelist[key].V1[0]) + xoffset, float64(linelist[key].V1[1]) + yoffset)
-    gc.LineTo(float64(linelist[key].V2[0]) + xoffset, float64(linelist[key].V2[1]) + yoffset)
+    gc.MoveTo(float64(linelist[key].V1[0])*xscale + xoffset, float64(linelist[key].V1[1])*yscale + yoffset)
+    gc.LineTo(float64(linelist[key].V2[0])*xscale + xoffset, float64(linelist[key].V2[1])*yscale + yoffset)
     gc.Close()
   }
 
