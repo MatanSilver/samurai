@@ -69,11 +69,18 @@ func main() {
         },
       },
       Action: func(c *cli.Context) error {
+        if (c.String("file") == "") {
+          return errors.New("The -f/--file flag is required")
+        }
+        output_name := "output.png"
+        if (c.String("output") != "") {
+          output_name = c.String("output")
+        }
         fmt.Printf("Loading triangles from STL file...\n")
         model := parser.ImportSTL(c.String("file"))
         fmt.Printf("%v triangles loaded\n", len(model.Triangles))
         fmt.Printf("Rendering image...\n")
-        geometry.Render(model, c.String("output"))
+        geometry.Render(model, output_name)
         fmt.Printf("Image rendered\n")
         return nil
       },
