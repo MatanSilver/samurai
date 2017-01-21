@@ -8,8 +8,8 @@ import (
   "bufio"
   "strings"
   "strconv"
-  "../utils"
-  "../geometry"
+  "samurai/utils"
+  "samurai/geometry"
 )
 
 func ImportSTL(filename string) geometry.Model {

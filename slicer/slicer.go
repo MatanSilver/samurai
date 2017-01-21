@@ -1,7 +1,7 @@
 package slicer
 import (
-  "../geometry"
-  "../utils"
+  "samurai/geometry"
+  "samurai/utils"
   "strconv"
   "fmt"
   "os"

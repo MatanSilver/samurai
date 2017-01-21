@@ -1,12 +1,12 @@
-package samurai
+package main
 
 import (
   "os"
   "github.com/urfave/cli"
-  "./utils"
-  "./parser"
-  "./geometry"
-  "./slicer"
+  "samurai/utils"
+  "samurai/parser"
+  "samurai/geometry"
+  "samurai/slicer"
   "fmt"
   "errors"
 )
