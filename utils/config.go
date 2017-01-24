@@ -7,6 +7,7 @@ import (
 
 type Config struct {
   LayerHeight float32
+  HeatBed bool
   BedTemp int
   ExtruderTemp int
 }
@@ -31,6 +32,7 @@ func GenerateConfig(filename string, conf Config) bool {
 
 var DefaultConfig Config = Config{
   LayerHeight: 0.2,
+  HeatBed: true,
   BedTemp: 60,
   ExtruderTemp: 220,
 }

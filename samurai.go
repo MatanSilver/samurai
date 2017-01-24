@@ -5,7 +5,8 @@ import (
   "github.com/urfave/cli"
   "samurai/utils"
   "samurai/parser"
-  "samurai/geometry"
+  "samurai/render"
+  //"samurai/geometry"
   "samurai/slicer"
   "fmt"
   "errors"
@@ -37,20 +38,6 @@ func main() {
         cli.BoolFlag{
           Name:   "save_layer_images",
           Usage:  "Save rendered images of each layer",
-        },
-        cli.StringFlag{
-          Name:   "layer_height",
-          Usage:  "Set the slice layer height",
-        },
-        cli.IntFlag{
-          Name:   "extruder_temp",
-          Usage:  "Set extruder temperature",
-          Destination:  &conf.ExtruderTemp,
-        },
-        cli.IntFlag{
-          Name:   "bed_temp",
-          Usage:  "Set bed temperature",
-          Destination:  &conf.BedTemp,
         },
       },
       Action: func(c *cli.Context) error {
@@ -100,7 +87,7 @@ func main() {
         model := parser.ImportSTL(c.String("file"))
         fmt.Printf("%v triangles loaded\n", len(model.Triangles))
         fmt.Printf("Rendering image...\n")
-        geometry.Render(model, output_name)
+        render.Render(model, output_name)
         fmt.Printf("Image rendered\n")
         return nil
       },
@@ -121,6 +108,11 @@ func main() {
           Name:   "extruder_temp",
           Usage:  "Set extruder temperature",
           Destination:  &conf.ExtruderTemp,
+        },
+        cli.BoolFlag{
+          Name:   "heat_bed",
+          Usage:  "Activate heated bed",
+          Destination:  &conf.HeatBed,
         },
         cli.IntFlag{
           Name:   "bed_temp",

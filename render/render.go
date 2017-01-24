@@ -1,6 +1,7 @@
-package geometry
+package render
 import (
   "github.com/fogleman/ln/ln"
+  "samurai/geometry"
   //"sync"
   //"fmt"
   "github.com/llgcode/draw2d/draw2dimg"
@@ -12,10 +13,10 @@ import (
 
 type  RenderPayload struct {
   Scene *ln.Scene
-  Triangle *Triangle
+  Triangle *geometry.Triangle
 }
 
-func AddTriangleToScene(scene *ln.Scene, triangle Triangle) {
+func AddTriangleToScene(scene *ln.Scene, triangle geometry.Triangle) {
   v1 := ln.Vector{float64(triangle.Vertices[0][0]), float64(triangle.Vertices[0][1]), float64(triangle.Vertices[0][2])}
   v2 := ln.Vector{float64(triangle.Vertices[1][0]), float64(triangle.Vertices[1][1]), float64(triangle.Vertices[1][2])}
   v3 := ln.Vector{float64(triangle.Vertices[2][0]), float64(triangle.Vertices[2][1]), float64(triangle.Vertices[2][2])}
@@ -23,7 +24,7 @@ func AddTriangleToScene(scene *ln.Scene, triangle Triangle) {
 }
 
 
-func Render(model Model, filename string) {
+func Render(model geometry.Model, filename string) {
 // create a scene and add a single cube
     scene := ln.Scene{}
     //count := len(model.Triangles)
@@ -60,7 +61,7 @@ func Render(model Model, filename string) {
     //paths.WriteToSVG("out.svg", width, height)
 }
 
-func Save2DSlice(linelist []LineSegment, filename string) {
+func Save2DSlice(linelist []geometry.LineSegment, filename string) {
   dest := image.NewRGBA(image.Rect(0, 0, 200, 200))
   gc := draw2dimg.NewGraphicContext(dest)
 

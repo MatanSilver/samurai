@@ -2,6 +2,7 @@ package slicer
 import (
   "samurai/geometry"
   "samurai/utils"
+  "samurai/render"
   "strconv"
   "fmt"
   "os"
@@ -49,10 +50,13 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
     if (len(linelists[iterator]) != 0) {
     }
     if (save_layer_images == true && len(linelists[iterator]) > 0){ //this was a weird thing
-      geometry.Save2DSlice(linelists[iterator], "layer_" + utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4) + ".png")
+      os.Mkdir("layer_images", os.FileMode(0777))
+      render.Save2DSlice(linelists[iterator], "layer_images/layer_" + utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4) + ".png")
     }
     //generate gcode for the layer here (plane and z change)
 
+    //_, err = w.WriteString(fmt.Sprintf("\n"))
+    //utils.Check(err)
     //make shells
 
     //make interface
