@@ -52,6 +52,15 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
       geometry.Save2DSlice(linelists[iterator], "layer_" + utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4) + ".png")
     }
     //generate gcode for the layer here (plane and z change)
+
+    //make shells
+
+    //make interface
+
+    //make infil
+
+    //make support
+
     iterator += 1
   }
 }
