@@ -5,6 +5,7 @@ import (
   "strconv"
   "fmt"
   "os"
+  "bufio"
 )
 
 func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_images bool) {
