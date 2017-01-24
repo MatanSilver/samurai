@@ -17,7 +17,7 @@ func (m *Model) Print() {
   }
 }
 
-func (m *Model) HeighestZ() float32 {
+func (m *Model) HighestZ() float32 {
   var highest float32 = 0.0
   for key := range m.Triangles { //iterate triangles
     for key2 := range m.Triangles[key].Vertices { //iterate vertices

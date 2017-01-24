@@ -7,12 +7,13 @@ import (
   "fmt"
   "os"
   "bufio"
+  "gopkg.in/cheggaaa/pb.v1"
 )
 
 func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_images bool) {
   //model.Print()
   //generate gcode for heating/inital things (homing, etc.)
-  heighestz := model.HeighestZ()
+  highestz := model.HighestZ()
   linelists := [][]geometry.LineSegment{}
   iterator := 0
   f, err := os.Create(filename)
@@ -39,7 +40,10 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
   utils.Check(err)
   w.Flush()
   //f.Sync()
-  for sliceheight := float32(0.0); sliceheight <= heighestz; sliceheight += conf.LayerHeight {
+  count := int(highestz / conf.LayerHeight)
+  bar := pb.StartNew(count)
+  for sliceheight := float32(0.0); sliceheight <= highestz; sliceheight += conf.LayerHeight {
+    bar.Increment()
     linelists = append(linelists, []geometry.LineSegment{})
     for key := range model.Triangles {
       if model.Triangles[key].IntersectsZ(sliceheight) {
@@ -67,4 +71,5 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
 
     iterator += 1
   }
+  //bar.FinishPrint("")
 }
