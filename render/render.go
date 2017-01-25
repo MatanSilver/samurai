@@ -74,7 +74,7 @@ func Save2DSlice(linelist []geometry.LineSegment, filename string) {
   yoffset := 50.0
   xscale := 5.0
   yscale := 5.0
-
+  //fmt.Printf("%v\n", linelist)
   gc.MoveTo(float64(linelist[0].V1[0])*xscale + xoffset, float64(linelist[0].V1[1])*yscale + yoffset) // should always be called first for a new path
   gc.LineTo(float64(linelist[0].V2[0])*xscale + xoffset, float64(linelist[0].V2[1])*yscale + yoffset)
   gc.Close()
