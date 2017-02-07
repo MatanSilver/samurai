@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-  LayerHeight float32
+  LayerHeight float64
   HeatBed bool
   BedTemp int
   ExtruderTemp int

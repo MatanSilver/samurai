@@ -5,8 +5,15 @@ import (
 
 type Model struct {
   Header      [80]byte
-  Count       uint32
+  Count       uint64
   Triangles   []Triangle
+  Length      uint64
+}
+
+type Model32 struct {
+  Header      [80]byte
+  Count       uint32
+  Triangles   []Triangle32
   Length      uint32
 }
 
@@ -17,8 +24,8 @@ func (m *Model) Print() {
   }
 }
 
-func (m *Model) HighestZ() float32 {
-  var highest float32 = 0.0
+func (m *Model) HighestZ() float64 {
+  var highest float64 = 0.0
   for key := range m.Triangles { //iterate triangles
     for key2 := range m.Triangles[key].Vertices { //iterate vertices
       if (m.Triangles[key].Vertices[key2][2] > highest) {
@@ -33,9 +40,31 @@ func (m *Model) GetTarget() Vector {
   return Vector{m.Triangles[0].Vertices[0][0], m.Triangles[0].Vertices[0][1], m.Triangles[0].Vertices[0][2]}
 }
 
+func (m *Model) GetCornerVector() Vector {
+  leftmost := m.Triangles[0].Vertices[0]
+  bottommost := m.Triangles[0].Vertices[0]
+  for _, triangle := range m.Triangles {
+    for _, vertex := range triangle.Vertices {
+      if (vertex[0] < leftmost[0]) {
+        leftmost = vertex
+      }
+      if (vertex[1] < bottommost[1]) {
+        bottommost = vertex
+      }
+    }
+  }
+  return Vector{leftmost[0], bottommost[1], 0.0}
+}
+
 type Triangle struct {
-  Normal      [3]float32
+  Normal      Vector
   Vertices    [3]Vector
+  Attribute   uint16
+}
+
+type Triangle32 struct {
+  Normal      Vector32
+  Vertices    [3]Vector32
   Attribute   uint16
 }
 
@@ -43,7 +72,7 @@ func (tri *Triangle) Print() {
   fmt.Printf("Triangle\n\tNormal: %v\n\tVertex 1: %v\n\tVertex 2: %v\n\tVertex 3: %v\n\tAttribute: %v\n", tri.Normal, tri.Vertices[0], tri.Vertices[1], tri.Vertices[2], tri.Attribute)
 }
 
-func (tri *Triangle) IntersectsZ(zlevel float32) bool {
+func (tri *Triangle) IntersectsZ(zlevel float64) bool {
   z1 := tri.Vertices[0][2]
   z2 := tri.Vertices[1][2]
   z3 := tri.Vertices[2][2]
@@ -64,7 +93,7 @@ func (tri *Triangle) IntersectsZ(zlevel float32) bool {
   return true
 }
 
-func (tri *Triangle) IntersectVectors(zlevel float32) (Vector, Vector) {
+func (tri *Triangle) IntersectVectors(zlevel float64) (Vector, Vector) {
   //if two points on z level, return those points
   if (tri.Vertices[0][2] == zlevel && tri.Vertices[1][2] == zlevel) {
     return tri.Vertices[0], tri.Vertices[1]
@@ -102,7 +131,9 @@ func (tri *Triangle) IntersectVectors(zlevel float32) (Vector, Vector) {
   }
 }
 
-type Vector [3]float32
+type Vector [3]float64
+
+type Vector32 [3]float32
 
 type LineSegment struct {
   V1 Vector
@@ -113,14 +144,14 @@ func (vec *Vector) Cross(vec2 Vector) Vector {
   return Vector{vec[1]*vec2[2] - vec[2]*vec2[1], -(vec[0]*vec2[2]-vec[2]*vec2[0]), vec[0]*vec2[1]-vec[1]*vec2[0]}
 }
 
-func (vec *Vector) Dot(vec2 Vector) float32 {
-  return float32(vec[0]*vec2[0] + vec[1]*vec2[1] + vec[2]*vec2[2])
+func (vec *Vector) Dot(vec2 Vector) float64 {
+  return vec[0]*vec2[0] + vec[1]*vec2[1] + vec[2]*vec2[2]
 }
 
-func average(xs[]float32)float32 {
-	total:=float32(0.0)
+func average(xs[]float64) float64 {
+	total:=0.0
 	for _,v:=range xs {
 		total += v
 	}
-	return total/float32(len(xs))
+	return total/float64(len(xs))
 }

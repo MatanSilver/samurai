@@ -3,11 +3,11 @@ package main
 import (
   "os"
   "github.com/urfave/cli"
-  "samurai/utils"
-  "samurai/parser"
-  "samurai/render"
+  "github.com/matansilver/samurai/utils"
+  "github.com/matansilver/samurai/parser"
+  "github.com/matansilver/samurai/render"
   //"samurai/geometry"
-  "samurai/slicer"
+  "github.com/matansilver/samurai/slicer"
   "fmt"
   "errors"
 )

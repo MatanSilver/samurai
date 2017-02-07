@@ -8,8 +8,8 @@ import (
   "bufio"
   "strings"
   "strconv"
-  "samurai/utils"
-  "samurai/geometry"
+  "github.com/matansilver/samurai/utils"
+  "github.com/matansilver/samurai/geometry"
 )
 
 func ImportSTL(filename string) geometry.Model {
@@ -36,7 +36,7 @@ func ParseASCIISTL(filename string) geometry.Model {
   scanner := bufio.NewScanner(file)
   var triangles []geometry.Triangle
   var models []geometry.Model
-  var vertices []([3]float32)
+  var vertices []([3]float64)
   for scanner.Scan() {
     text := scanner.Text()
     if (strings.Contains(text, "solid") == true && strings.Contains(text, "endsolid") == false) {
@@ -45,22 +45,22 @@ func ParseASCIISTL(filename string) geometry.Model {
     } else if strings.Contains(text, "facet normal") {
       //fmt.Printf("new facet normal\n")
       NormalStrings := strings.Split(strings.SplitAfter(text, "facet normal ")[1], " ")
-      var NormalFloats [3]float32
+      var NormalFloats [3]float64
       for i := 0; i < 3; i++ {
         Float64, err := strconv.ParseFloat(NormalStrings[i], 64)
-        NormalFloats[i] = float32(Float64)
         utils.Check(err)
+        NormalFloats[i] = Float64
       }
       newtri := geometry.Triangle{Normal: NormalFloats}
       triangles = append(triangles, newtri)
     } else if strings.Contains(text, "vertex") {
       //fmt.Printf("new vertex\n")
       VertexStrings := strings.Split(strings.SplitAfter(text, "vertex ")[1], " ")
-      var VertexFloats [3]float32
+      var VertexFloats [3]float64
       for i := 0; i < 3; i++ {
-        Float64, err := strconv.ParseFloat(VertexStrings[i], 32)
-        VertexFloats[i] = float32(Float64)
+        Float64, err := strconv.ParseFloat(VertexStrings[i], 64)
         utils.Check(err)
+        VertexFloats[i] = Float64
       }
       vertices = append(vertices, VertexFloats)
     } else if strings.Contains(text, "endfacet") {
@@ -72,7 +72,7 @@ func ParseASCIISTL(filename string) geometry.Model {
     } else if strings.Contains(text, "endsolid") {
       //fmt.Printf("end solid\n")
       models[len(models) - 1].Triangles = triangles
-      models[len(models) - 1].Length = uint32(len(triangles))
+      models[len(models) - 1].Length = uint64(len(triangles))
       triangles = nil
     }
   }
@@ -87,7 +87,7 @@ func ParseBinarySTL(filename string) geometry.Model {
     panic(err)
   }
 
-  m := geometry.Model{}
+  m := geometry.Model32{}
 
   // Parsing Header first 80 bytes.
   err = binary.Read(bytes.NewBuffer(data[0:80]), binary.LittleEndian, &m.Header)
@@ -102,7 +102,7 @@ func ParseBinarySTL(filename string) geometry.Model {
   }
 
   // Allocating enough memory for all the triangles in the slice
-  m.Triangles = make([]geometry.Triangle, m.Length)
+  m.Triangles = make([]geometry.Triangle32, m.Length)
 
   // Parsing the Triangle slice on byte 84 onwards, 50 bytes per triangle
   err = binary.Read(bytes.NewBuffer(data[84:]), binary.LittleEndian, &m.Triangles)
@@ -110,5 +110,20 @@ func ParseBinarySTL(filename string) geometry.Model {
     panic(err)
   }
 
-  return m
+  m2 := geometry.Model{}
+  m2.Header = m.Header
+  m2.Count = uint64(m.Count)
+  m2.Length = uint64(m.Length)
+  for key := range(m.Triangles) {
+    newtriangle := geometry.Triangle{}
+    newtriangle.Attribute = m.Triangles[key].Attribute
+    for i := 0; i < 3; i++ {
+      newtriangle.Normal[i] = float64(m.Triangles[key].Normal[i])
+      for j := 0; j < 3; j++ {
+        newtriangle.Vertices[i][j] = float64(m.Triangles[key].Vertices[i][j])
+      }
+    }
+    m2.Triangles = append(m2.Triangles, newtriangle)
+  }
+  return m2
 }

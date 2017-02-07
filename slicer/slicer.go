@@ -1,8 +1,8 @@
 package slicer
 import (
-  "samurai/geometry"
-  "samurai/utils"
-  "samurai/render"
+  "github.com/matansilver/samurai/geometry"
+  "github.com/matansilver/samurai/utils"
+  "github.com/matansilver/samurai/render"
   "strconv"
   "fmt"
   "os"
@@ -16,6 +16,7 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
   highestz := model.HighestZ()
   linelists := [][]geometry.LineSegment{}
   iterator := 0
+  corner := model.GetCornerVector()
   f, err := os.Create(filename)
   defer f.Close()
   utils.Check(err)
@@ -42,7 +43,7 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
   //f.Sync()
   //count := int(highestz / conf.LayerHeight)
   //bar := pb.StartNew(count)
-  for sliceheight := float32(0.0); sliceheight <= highestz; sliceheight += conf.LayerHeight {
+  for sliceheight := 0.0; sliceheight <= highestz; sliceheight += conf.LayerHeight {
     //bar.Increment()
     linelists = append(linelists, []geometry.LineSegment{})
     for key := range model.Triangles {
@@ -55,7 +56,7 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
     }
     if (save_layer_images == true && len(linelists[iterator]) > 0){ //this was a weird thing
       os.Mkdir("layer_images", os.FileMode(0777))
-      render.Save2DSlice(linelists[iterator], "layer_images/layer_" + utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4) + ".png")
+      render.Save2DSlice(corner, linelists[iterator], "layer_images/layer_" + utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4) + ".png")
     }
     //generate gcode for the layer here (plane and z change)
 
