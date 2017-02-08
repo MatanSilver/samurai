@@ -79,6 +79,22 @@ func (tri *Triangle) IntersectVectors(zlevel float64) (Vector, Vector) {
   }
 }
 
+func (tri *Triangle) IntersectsLine(line LineSegment) bool {
+  xterm := line.V2[0] - line.V1[0]
+  yterm := line.V2[1] - line.V1[1]
+  zterm := line.V2[2] - line.V1[2]
+  p1 := tri.Vertices[0][0] * xterm + tri.Vertices[0][1] * yterm + tri.Vertices[0][2] * zterm
+  p1sign := p1 >= 0
+  p2 := tri.Vertices[1][0] * xterm + tri.Vertices[1][1] * yterm + tri.Vertices[1][2] * zterm
+  p2sign := p2 >= 0
+  p3 := tri.Vertices[2][0] * xterm + tri.Vertices[2][1] * yterm + tri.Vertices[2][2] * zterm
+  p3sign := p3 >= 0
+  if (p1sign && p2sign && p3sign || !p1sign && !p2sign && !p3sign) {
+    return true
+  }
+  return false
+}
+
 func (tri *Triangle) Rotate(rot Vector, origin Vector) *Triangle {
   tri.Vertices[0].Rotate(rot, origin)
   tri.Vertices[1].Rotate(rot, origin)
