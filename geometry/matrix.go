@@ -18,7 +18,7 @@ func MatrixMultiply(mat1 Matrix, mat2 Matrix) Matrix {
       for j := 0; j < len(mat1[0]); j++ { //this iterates the mat3 location
 
         for k := 0; k < len(mat1); k++ { //iterates the multiplication location
-            mat3[j][i] += mat1[k][j] * mat2[i][k]
+            mat3[i][j] += mat1[k][j] * mat2[i][k]
         }
 
       }
