@@ -78,3 +78,17 @@ func (tri *Triangle) IntersectVectors(zlevel float64) (Vector, Vector) {
     return v1, v2
   }
 }
+
+func (tri *Triangle) Rotate(rot Vector, origin Vector) *Triangle {
+  tri.Vertices[0].Rotate(rot, origin)
+  tri.Vertices[1].Rotate(rot, origin)
+  tri.Vertices[2].Rotate(rot, origin)
+  return tri
+}
+
+func (tri *Triangle) Translate(vec Vector) *Triangle {
+  tri.Vertices[0].Add(vec)
+  tri.Vertices[1].Add(vec)
+  tri.Vertices[2].Add(vec)
+  return tri
+}

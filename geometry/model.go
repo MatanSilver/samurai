@@ -56,3 +56,17 @@ func (m *Model) GetCornerVector() Vector {
   }
   return Vector{leftmost[0], bottommost[1], 0.0}
 }
+
+func (m *Model) Rotate(rot Vector, origin Vector) *Model {
+  for key := range m.Triangles {
+    m.Triangles[key].Rotate(rot, origin)
+  }
+  return m
+}
+
+func (m *Model) Translate(vec Vector) *Model {
+  for key := range m.Triangles {
+    m.Triangles[key].Translate(vec)
+  }
+  return m
+}
