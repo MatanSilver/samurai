@@ -48,7 +48,7 @@ func (vec *Vector) RotateX(angle float64) *Vector {
   return vec
 }
 
-func (vec *Vector) RotateY(angle float64) *Vector{
+func (vec *Vector) RotateY(angle float64) *Vector {
   rotation_mat := Matrix{[]float64{math.Cos(angle), 0.0, math.Sin(angle)}, []float64{0.0, 1.0, 0.0}, []float64{-math.Sin(angle), 0.0, math.Cos(angle)}}
   rotated_vec := MatrixMultiply(rotation_mat, [][]float64{[]float64{vec[0]}, []float64{vec[1]}, []float64{vec[2]}})
   vec[0] = rotated_vec[0][0]
@@ -57,11 +57,15 @@ func (vec *Vector) RotateY(angle float64) *Vector{
   return vec
 }
 
-func (vec *Vector) RotateZ(angle float64) *Vector{
+func (vec *Vector) RotateZ(angle float64) *Vector {
   rotation_mat := Matrix{[]float64{math.Cos(angle), -math.Sin(angle), 0.0}, []float64{math.Sin(angle), math.Cos(angle), 0.0}, []float64{0.0, 0.0, 1.0}}
   rotated_vec := MatrixMultiply(rotation_mat, [][]float64{[]float64{vec[0]}, []float64{vec[1]}, []float64{vec[2]}})
   vec[0] = rotated_vec[0][0]
   vec[1] = rotated_vec[0][1]
   vec[2] = rotated_vec[0][2]
   return vec
+}
+
+func VectorEquals(vec1 Vector, vec2 Vector) bool {
+  return (vec1[0] == vec2[0] && vec1[1] == vec2[1] && vec1[2] == vec2[2])
 }
