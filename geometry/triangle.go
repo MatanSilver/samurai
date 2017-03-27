@@ -108,3 +108,7 @@ func (tri *Triangle) Translate(vec Vector) *Triangle {
   tri.Vertices[2].Add(vec)
   return tri
 }
+
+func (tri *Triangle) VerticalDistance(vec Vector) float64 { // TODO fill out
+  return 0.0
+}

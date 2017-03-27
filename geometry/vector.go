@@ -2,6 +2,7 @@ package geometry
 
 import (
   "math"
+  "sync"
 )
 
 type Vector [3]float64
@@ -68,4 +69,47 @@ func (vec *Vector) RotateZ(angle float64) *Vector {
 
 func VectorEquals(vec1 Vector, vec2 Vector) bool {
   return (vec1[0] == vec2[0] && vec1[1] == vec2[1] && vec1[2] == vec2[2])
+}
+
+func VectorApprox(vec1 Vector, vec2 Vector) bool {
+  return (math.Abs(vec1[0] - vec2[0]) <= 0.000001 && math.Abs(vec1[1] - vec2[2]) <= 0.000001 && math.Abs(vec1[2] - vec2[2]) <= 0.00001)
+}
+
+func (ls *LineSegment) FlipSegment() *LineSegment {
+  buff := ls.V1
+  ls.V1 = ls.V2
+  ls.V2 = buff
+  return ls
+}
+
+func LineListToLoops(linelist []LineSegment) [][]LineSegment {
+  /*
+  for every line in linelist:
+    for every line in every loop:
+      if current line from linelist comes after the line in the loop:
+        insert the current linelist line into the loop
+    if any lines didn't make it at all, add them to a new loop
+
+    SCRATCH THAT
+  */
+  loops := [][]LineSegment{}
+  loops = append(loops, []LineSegment{})
+  semiloops := [][]LineSegment{}
+  semiloops = append(loops, []LineSegment{})
+  semiloopsmtx = &sync.RWMutex{}
+  loops[0] = append(loops[0], linelist[0])
+  semiloops[0] = append(semiloops[0], linelist[0])
+  for key, line := range linelist[1:] {
+    go func() {
+      if VectorApprox(line.V1, linelist[key].V2) { //correct dir
+        semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line)
+      } else if VectorApprox(line.V2, linelist[key].V2) { //wrong dir: flip current
+        semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line.FlipSegment())
+      } else { //line too far: make new semiloops
+        loops = append(semiloops, []geometry.LineSegment{})
+        semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line)
+      }
+    }
+  }
+  return loops
 }
