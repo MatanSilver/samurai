@@ -1,12 +1,13 @@
 package utils
+
 import (
-  "strings"
+	"strings"
 )
 
 func Check(e error) {
-  if e != nil {
-    panic(e)
-  }
+	if e != nil {
+		panic(e)
+	}
 }
 
 func LeftPad2Len(s string, padStr string, overallLen int) string {
