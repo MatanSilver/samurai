@@ -41,11 +41,13 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
 	utils.Check(err)
 	_, err = w.WriteString(fmt.Sprintf("M82 ; use absolute distances for extrusion\n"))
 	utils.Check(err)
+	_, err = w.WriteString(fmt.Sprintf("G92 E0 ; reset extruder position\n"))
+	utils.Check(err)
 	w.Flush()
 	//f.Sync()
 	//count := int(highestz / conf.LayerHeight)
 	//bar := pb.StartNew(count)
-	for sliceheight := 5.0; sliceheight <= highestz; sliceheight += conf.LayerHeight {
+	for sliceheight := 0.0; sliceheight <= highestz; sliceheight += conf.LayerHeight {
 		//bar.Increment()
 		//linelists = append(linelists, []geometry.LineSegment{})
 		linelists = append(linelists, geometry.LineList{})
@@ -73,10 +75,26 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
 		// openloops := geometry.LineListToOpenLoops(ll)
 		closedloops := geometry.CloseLoops(openloops)
 		fmt.Printf("closed loops: %v\n", closedloops)
-		panic("debug")
+		//panic("debug")
 		//fmt.Printf("%v\n", looplist)
 		//generate gcode for the layer here (plane and z change)
-
+		epos := 0.0
+		if sliceheight != 0.0 {
+			_, err = w.WriteString(fmt.Sprintf("G1 Z%v\n", sliceheight))
+			utils.Check(err)
+			_, err = w.WriteString(fmt.Sprintf("G92 E0\n"))
+			utils.Check(err)
+		}
+		for _, closedloop := range closedloops {
+			utils.Check(err)
+			for _, line := range closedloop {
+				epos += line.Length() * 0.1
+				_, err = w.WriteString(fmt.Sprintf("G1 X%v Y%v\n", line.V1[0], line.V1[1]))
+				utils.Check(err)
+				_, err = w.WriteString(fmt.Sprintf("G1 X%v Y%v E%v\n", line.V2[0], line.V2[1], epos))
+				utils.Check(err)
+			}
+		}
 		//_, err = w.WriteString(fmt.Sprintf("\n"))
 		//utils.Check(err)
 		//make shells
@@ -88,6 +106,7 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
 		//make support
 
 		iterator += 1
+		w.Flush()
 	}
 	//bar.FinishPrint("")
 }
