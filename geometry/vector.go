@@ -2,8 +2,10 @@ package geometry
 
 import (
 	"math"
-	"sync"
+	//"sync"
 	"errors"
+	"fmt"
+	"github.com/matansilver/samurai/utils"
 )
 
 type Vector [3]float64
@@ -11,26 +13,22 @@ type Vector [3]float64
 type Vector32 [3]float32
 
 type LineSegment struct {
-	&sync.RWMutex{}
 	V1 Vector
 	V2 Vector
 }
 
-type LineList struct {
-		&sync.RWMutex{}
-		List []LineSegment
-}
+type LineList []LineSegment
 
 func (ll *LineList) IsClosed() bool {
-	if (ll.IsOrdered() && VectorApprox(ll.list[0].V1, ll.list[-1].V2)) {
+	if ll.IsOrdered() && VectorApprox((*ll)[0].V1, (*ll)[len(*ll)-1].V2) {
 		return true
 	}
 	return false
 }
 
 func (ll *LineList) IsOrdered() bool {
-	for key, line := range ll.List[1:] { //TODO check if this works
-		if !VectorApprox(line.V1, ll.List[key].V2) {
+	for key, line := range (*ll)[1:] { //TODO check if this works
+		if !VectorApprox(line.V1, (*ll)[key].V2) {
 			return false
 		}
 	}
@@ -38,10 +36,10 @@ func (ll *LineList) IsOrdered() bool {
 }
 
 func (ll *LineList) InsertLine(line LineSegment) bool {
-	if VectorApprox(line.V2, ll.List[0].V1) {
-		ll.List = append(line, ll.List...)
-	} else if VectorApprox(line.V1, ll.List[-1].V2) {
-		ll.list = append(ll.List..., line)
+	if VectorApprox(line.V2, (*ll)[0].V1) {
+		*ll = append(LineList{line}, (*ll)...)
+	} else if VectorApprox(line.V1, (*ll)[len(*ll)-1].V2) {
+		*ll = append((*ll), line)
 	} else {
 		return false
 	}
@@ -49,19 +47,28 @@ func (ll *LineList) InsertLine(line LineSegment) bool {
 }
 
 func (ll *LineList) InsertList(list LineList) (bool, error) {
-	if VectorApprox(list.List[-1].V2, ll.List[0].V1) {
-		if (!list.IsOrdered() || !ll.IsOrdered()) {
-			return false, errors.New("One of the lists is not sorted")
-		}
-		ll.List = append(list..., ll.List...)
-	} else if VectorApprox(list.List[0].V1, ll.List[-1].V2) {
-		if (!list.IsOrdered() || !ll.IsOrdered()) {
-			return false, errors.New("One of the lists is not sorted")
-		}
-		ll.list = append(ll.List..., list...)
+	//newlist := LineList{}
+	//fmt.Printf("trying to insert \n%v into \n%v\n", list, ll)
+	if !list.IsOrdered() || !ll.IsOrdered() {
+		return false, errors.New("One of the lists is not sorted")
+	}
+	if VectorApprox(list[len(list)-1].V2, (*ll)[0].V1) == true { //forwards in beginning
+		//fmt.Printf("trying to insert forwards in beginning\n")
+		*ll = append(list, (*ll)...)
+	} else if VectorApprox(list[0].V1, (*ll)[len(*ll)-1].V2) == true { //forwards at end
+		//fmt.Printf("trying to insert forwards in end\n")
+		*ll = append((*ll), list...)
+	} else if VectorApprox(list[0].V1, (*ll)[0].V1) == true { //backwards at beginning
+		//fmt.Printf("trying to insert backwards in beginning\n")
+		*ll = append(*list.FlipListVal(), (*ll)...)
+	} else if VectorApprox(list[len(list)-1].V2, (*ll)[len(*ll)-1].V2) == true { //backwards at end
+		//fmt.Printf("trying to insert backwards in end\n")
+		*ll = append((*ll), *list.FlipListVal()...)
 	} else {
+		//fmt.Printf("not inserting\n")
 		return false, nil
 	}
+	//fmt.Printf("resulted in: \n%v\n\n", ll)
 	return true, nil
 }
 
@@ -85,6 +92,22 @@ func (vec *Vector) Subtract(vec2 Vector) *Vector {
 	vec[1] -= vec2[1]
 	vec[2] -= vec2[2]
 	return vec
+}
+
+func (vec *Vector) AddVal(vec2 Vector) *Vector {
+	veccopy := *vec
+	veccopy[0] += vec2[0]
+	veccopy[1] += vec2[1]
+	veccopy[2] += vec2[2]
+	return &veccopy
+}
+
+func (vec *Vector) SubtractVal(vec2 Vector) *Vector {
+	veccopy := *vec
+	veccopy[0] -= vec2[0]
+	veccopy[1] -= vec2[1]
+	veccopy[2] -= vec2[2]
+	return &veccopy
 }
 
 func (vec *Vector) Rotate(rot Vector, origin Vector) *Vector {
@@ -123,7 +146,16 @@ func VectorEquals(vec1 Vector, vec2 Vector) bool {
 }
 
 func VectorApprox(vec1 Vector, vec2 Vector) bool {
-	return (math.Abs(vec1[0]-vec2[0]) <= 0.000001 && math.Abs(vec1[1]-vec2[2]) <= 0.000001 && math.Abs(vec1[2]-vec2[2]) <= 0.00001)
+	//fmt.Printf("comparing %v and %v\n", vec1, vec2)
+	// mag := vec1.SubtractVal(vec2).Magnitude()
+	// if mag == 0.0 {
+	//  	fmt.Printf("returns: %v\n", (math.Abs(vec1[0]-vec2[0]) <= 0.00001 && math.Abs(vec1[1]-vec2[1]) <= 0.00001 && math.Abs(vec1[2]-vec2[2]) <= 0.00001))
+	// }
+	return (math.Abs(vec1[0]-vec2[0]) <= 0.00001 && math.Abs(vec1[1]-vec2[1]) <= 0.00001 && math.Abs(vec1[2]-vec2[2]) <= 0.00001)
+}
+
+func (vec *Vector) Magnitude() float64 {
+	return math.Sqrt(math.Pow(vec[0], 2) + math.Pow(vec[1], 2) + math.Pow(vec[2], 2))
 }
 
 func (ls *LineSegment) FlipSegment() *LineSegment {
@@ -134,57 +166,80 @@ func (ls *LineSegment) FlipSegment() *LineSegment {
 }
 
 func (ls *LineSegment) FlipSegmentVal() LineSegment {
-	ls2 := ls
+	ls2 := *ls
 	buff := ls.V1
 	ls2.V1 = ls.V2
 	ls2.V2 = buff
 	return ls2
 }
 
-/*
-inputs:
-line sebments
-open loops
-
-output:
-open loops
-*/
-func segment_worker(chin <-chan geometry.LineSegment, chout chan<- []geometry.LineSegment) {
-
-}
-
-/*
-input:
-linelists
-open loops
-
-output:
-open loops
-closed loops
-*/
-func loop_worker(chin <-chan []geometry.LineSegment) {
-
-}
-
-func LineListToLoops(linelist LineList) [][]LineSegment {
-	loops := [][]LineSegment{}
-	loops = append(loops, []LineSegment{})
-	semiloops := [][]LineSegment{}
-	semiloops = append(loops, []LineSegment{})
-	semiloopsmtx = &sync.RWMutex{}
-	loops[0] = append(loops[0], linelist[0])
-	semiloops[0] = append(semiloops[0], linelist[0])
-	for key, line := range linelist[1:] {
-		go func() {
-			if VectorApprox(line.V1, linelist[key].V2) { //correct dir
-				semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line)
-			} else if VectorApprox(line.V2, linelist[key].V2) { //wrong dir: flip current
-				semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line.FlipSegment())
-			} else { //line too far: make new semiloops
-				loops = append(semiloops, []geometry.LineSegment{})
-				semiloops[len(semiloops)-1] = append(semiloops[len(semiloops)-1], line)
-			}
-		}()
+func (ll *LineList) FlipList() *LineList {
+	fmt.Printf("flipping!\n")
+	for i := 0; i < len(*ll)/2; i++ {
+		j := len(*ll) - i - 1
+		(*ll)[i], (*ll)[j] = (*ll)[j], (*ll)[i]
 	}
-	return loops
+	for key := range *ll {
+		(*ll)[key].FlipSegment()
+	}
+	return ll
+}
+
+func (ll *LineList) FlipListVal() *LineList {
+	fmt.Printf("flipping!\n")
+	ll2 := *ll
+	for i := 0; i < len(ll2)/2; i++ {
+		j := len(ll2) - i - 1
+		ll2[i], ll2[j] = ll2[j], ll2[i]
+	}
+	for key := range ll2 {
+		ll2[key].FlipSegment()
+	}
+	return &ll2
+}
+
+func LineListToOpenLoops(linelist LineList) []LineList {
+	openloops := []LineList{}
+	for _, val := range linelist {
+		openloops = append(openloops, LineList{val})
+	}
+	return openloops
+}
+
+func CloseLoops(openloops []LineList) []LineList {
+	closedloops := []LineList{}
+	for len(openloops) > 0 {
+		iters := len(openloops) - 1
+		//fmt.Printf("iters: %d\n", iters)
+		//fmt.Printf("len(openloops): %d\n", len(openloops))
+		for i := 0; i < iters; i++ { //iterate over all but last
+			//fmt.Printf("i: %d\n", i)
+			//fmt.Printf("trying to insert list of indices %d and %d\n", i, len(openloops)-1);
+			//fmt.Printf("lists are: %v, and %v\n", openloops[i], openloops[len(openloops)-1])
+			result, err := openloops[i].InsertList(openloops[len(openloops)-1])
+			utils.Check(err)
+			if result == true { //insert current and last element
+				openloops = openloops[0 : len(openloops)-1] //cut off last element
+				//fmt.Printf("stitched together two lists\n")
+				fmt.Printf("openloops reduced to %d elements\n", len(openloops))
+				iters--
+				if openloops[i].IsClosed() {
+					fmt.Printf("Closed a loop\n")
+					closedloops = append(closedloops, openloops[i])
+					i--
+					if len(openloops) > 1 {
+						fmt.Printf("i+1: %d\n", i+1)
+						fmt.Printf("len(openloops)-1: %d\n", len(openloops)-1)
+						openloops = append(openloops[:i], openloops[i+1:len(openloops)-1]...) //TODO: might have to check for end of slice
+					} else {
+						openloops = []LineList{}
+					}
+					iters--
+				}
+			} else {
+				//fmt.Printf("missed stitching\n")
+			}
+		}
+	}
+	return closedloops
 }
