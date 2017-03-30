@@ -4,7 +4,7 @@ import (
 	"math"
 	//"sync"
 	"errors"
-	"fmt"
+	//"fmt"
 	"github.com/matansilver/samurai/utils"
 )
 
@@ -18,6 +18,10 @@ type LineSegment struct {
 }
 
 type LineList []LineSegment
+
+func (ls *LineSegment) Length() float64 {
+	return ls.V1.SubtractVal(ls.V2).Magnitude()
+}
 
 func (ll *LineList) IsClosed() bool {
 	if ll.IsOrdered() && VectorApprox((*ll)[0].V1, (*ll)[len(*ll)-1].V2) {
@@ -174,7 +178,7 @@ func (ls *LineSegment) FlipSegmentVal() LineSegment {
 }
 
 func (ll *LineList) FlipList() *LineList {
-	fmt.Printf("flipping!\n")
+	//fmt.Printf("flipping!\n")
 	for i := 0; i < len(*ll)/2; i++ {
 		j := len(*ll) - i - 1
 		(*ll)[i], (*ll)[j] = (*ll)[j], (*ll)[i]
@@ -186,7 +190,7 @@ func (ll *LineList) FlipList() *LineList {
 }
 
 func (ll *LineList) FlipListVal() *LineList {
-	fmt.Printf("flipping!\n")
+	//fmt.Printf("flipping!\n")
 	ll2 := *ll
 	for i := 0; i < len(ll2)/2; i++ {
 		j := len(ll2) - i - 1
@@ -221,15 +225,15 @@ func CloseLoops(openloops []LineList) []LineList {
 			if result == true { //insert current and last element
 				openloops = openloops[0 : len(openloops)-1] //cut off last element
 				//fmt.Printf("stitched together two lists\n")
-				fmt.Printf("openloops reduced to %d elements\n", len(openloops))
+				//fmt.Printf("openloops reduced to %d elements\n", len(openloops))
 				iters--
 				if openloops[i].IsClosed() {
-					fmt.Printf("Closed a loop\n")
+					//fmt.Printf("Closed a loop\n")
 					closedloops = append(closedloops, openloops[i])
 					i--
 					if len(openloops) > 1 {
-						fmt.Printf("i+1: %d\n", i+1)
-						fmt.Printf("len(openloops)-1: %d\n", len(openloops)-1)
+						//fmt.Printf("i+1: %d\n", i+1)
+						//fmt.Printf("len(openloops)-1: %d\n", len(openloops)-1)
 						openloops = append(openloops[:i], openloops[i+1:len(openloops)-1]...) //TODO: might have to check for end of slice
 					} else {
 						openloops = []LineList{}
