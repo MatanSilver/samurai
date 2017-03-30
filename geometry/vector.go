@@ -3,6 +3,7 @@ package geometry
 import (
 	"math"
 	"sync"
+	"errors"
 )
 
 type Vector [3]float64
@@ -10,8 +11,58 @@ type Vector [3]float64
 type Vector32 [3]float32
 
 type LineSegment struct {
+	&sync.RWMutex{}
 	V1 Vector
 	V2 Vector
+}
+
+type LineList struct {
+		&sync.RWMutex{}
+		List []LineSegment
+}
+
+func (ll *LineList) IsClosed() bool {
+	if (ll.IsOrdered() && VectorApprox(ll.list[0].V1, ll.list[-1].V2)) {
+		return true
+	}
+	return false
+}
+
+func (ll *LineList) IsOrdered() bool {
+	for key, line := range ll.List[1:] { //TODO check if this works
+		if !VectorApprox(line.V1, ll.List[key].V2) {
+			return false
+		}
+	}
+	return true
+}
+
+func (ll *LineList) InsertLine(line LineSegment) bool {
+	if VectorApprox(line.V2, ll.List[0].V1) {
+		ll.List = append(line, ll.List...)
+	} else if VectorApprox(line.V1, ll.List[-1].V2) {
+		ll.list = append(ll.List..., line)
+	} else {
+		return false
+	}
+	return true
+}
+
+func (ll *LineList) InsertList(list LineList) (bool, error) {
+	if VectorApprox(list.List[-1].V2, ll.List[0].V1) {
+		if (!list.IsOrdered() || !ll.IsOrdered()) {
+			return false, errors.New("One of the lists is not sorted")
+		}
+		ll.List = append(list..., ll.List...)
+	} else if VectorApprox(list.List[0].V1, ll.List[-1].V2) {
+		if (!list.IsOrdered() || !ll.IsOrdered()) {
+			return false, errors.New("One of the lists is not sorted")
+		}
+		ll.list = append(ll.List..., list...)
+	} else {
+		return false, nil
+	}
+	return true, nil
 }
 
 func (vec *Vector) Cross(vec2 Vector) Vector {
@@ -82,16 +133,40 @@ func (ls *LineSegment) FlipSegment() *LineSegment {
 	return ls
 }
 
-func LineListToLoops(linelist []LineSegment) [][]LineSegment {
-	/*
-	  for every line in linelist:
-	    for every line in every loop:
-	      if current line from linelist comes after the line in the loop:
-	        insert the current linelist line into the loop
-	    if any lines didn't make it at all, add them to a new loop
+func (ls *LineSegment) FlipSegmentVal() LineSegment {
+	ls2 := ls
+	buff := ls.V1
+	ls2.V1 = ls.V2
+	ls2.V2 = buff
+	return ls2
+}
 
-	    SCRATCH THAT
-	*/
+/*
+inputs:
+line sebments
+open loops
+
+output:
+open loops
+*/
+func segment_worker(chin <-chan geometry.LineSegment, chout chan<- []geometry.LineSegment) {
+
+}
+
+/*
+input:
+linelists
+open loops
+
+output:
+open loops
+closed loops
+*/
+func loop_worker(chin <-chan []geometry.LineSegment) {
+
+}
+
+func LineListToLoops(linelist LineList) [][]LineSegment {
 	loops := [][]LineSegment{}
 	loops = append(loops, []LineSegment{})
 	semiloops := [][]LineSegment{}
