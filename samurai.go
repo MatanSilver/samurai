@@ -41,15 +41,18 @@ func main() {
 					Usage: "Save rendered images of each layer",
 				},
 				cli.StringFlag{
-					Name: "cpu_profile",
+					Name:  "cpu_profile",
 					Usage: "Save cpu profile to `FILE`",
 				},
 			},
 			Action: func(c *cli.Context) error {
-				f, err := os.Create(c.String("cpu_profile"))
-        utils.Check(err)
-        pprof.StartCPUProfile(f)
-        defer pprof.StopCPUProfile()
+				if c.String("cpu_profile") != "" {
+					f, err := os.Create(c.String("cpu_profile"))
+					utils.Check(err)
+					pprof.StartCPUProfile(f)
+				}
+
+				defer pprof.StopCPUProfile()
 				if c.String("file") == "" {
 					return errors.New("The -f/--file flag is required")
 				}
@@ -66,6 +69,9 @@ func main() {
 					output_name = c.String("output")
 				}
 				fmt.Println("Slicing model...")
+				if conf.Jitter == true {
+					model.Jitter()
+				}
 				slicer.Slice(output_name, model, conf, c.Bool("save_layer_images"))
 				fmt.Println("Model sliced")
 				return nil
