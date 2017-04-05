@@ -50,9 +50,9 @@ func main() {
 					f, err := os.Create(c.String("cpu_profile"))
 					utils.Check(err)
 					pprof.StartCPUProfile(f)
+					defer pprof.StopCPUProfile()
 				}
 
-				defer pprof.StopCPUProfile()
 				if c.String("file") == "" {
 					return errors.New("The -f/--file flag is required")
 				}
