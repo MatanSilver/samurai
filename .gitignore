@@ -4,3 +4,4 @@
 *.yaml
 samurai
 *.gcode
+*.prof
