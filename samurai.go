@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/matansilver/samurai/slicer"
+	"runtime/pprof"
 )
 
 func main() {
@@ -39,8 +40,16 @@ func main() {
 					Name:  "save_layer_images",
 					Usage: "Save rendered images of each layer",
 				},
+				cli.StringFlag{
+					Name: "cpu_profile",
+					Usage: "Save cpu profile to `FILE`",
+				},
 			},
 			Action: func(c *cli.Context) error {
+				f, err := os.Create(c.String("cpu_profile"))
+        utils.Check(err)
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
 				if c.String("file") == "" {
 					return errors.New("The -f/--file flag is required")
 				}
