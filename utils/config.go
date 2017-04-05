@@ -11,6 +11,7 @@ type Config struct {
 	HeatBed      bool
 	BedTemp      int
 	ExtruderTemp int
+	Jitter       bool
 }
 
 func LoadConfig(filename string) Config {
@@ -36,4 +37,5 @@ var DefaultConfig Config = Config{
 	HeatBed:      true,
 	BedTemp:      60,
 	ExtruderTemp: 220,
+	Jitter:       true,
 }
