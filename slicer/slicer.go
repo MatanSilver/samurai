@@ -65,18 +65,8 @@ func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_
 		}
 		//make a list of linelists, each a complete closed loop
 		openloops := geometry.LineListToOpenLoops(linelists[iterator])
-		//seg1 := geometry.LineSegment{V1: geometry.Vector{0.0, 0.0, 0.0}, V2: geometry.Vector{0.0, 1.0, 0.0}}
-		// seg1_alt := geometry.LineSegment{V2: geometry.Vector{0.0, 1.0, 0.0}, V1: geometry.Vector{0.0, 0.0, 0.0}}
-		// seg2 := geometry.LineSegment{V1: geometry.Vector{0.0, 1.0, 0.0}, V2: geometry.Vector{1.0, 1.0, 0.0}}
-		// seg3 := geometry.LineSegment{V1: geometry.Vector{1.0, 1.0, 0.0}, V2: geometry.Vector{1.0, 0.0, 0.0}}
-		// seg4 := geometry.LineSegment{V1: geometry.Vector{1.0, 0.0, 0.0}, V2: geometry.Vector{0.0, 0.0, 0.0}}
-		//ll := geometry.LineList{seg3, seg1_alt, seg2, seg4}
-		// ll := geometry.LineList{seg4, seg1_alt, seg2, seg3}
-		// openloops := geometry.LineListToOpenLoops(ll)
 		closedloops := geometry.CloseLoops(openloops)
-		fmt.Printf("closed loops: %v\n", closedloops)
 		//panic("debug")
-		//fmt.Printf("%v\n", looplist)
 		//generate gcode for the layer here (plane and z change)
 		epos := 0.0
 		if sliceheight != 0.0 {
