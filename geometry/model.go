@@ -70,3 +70,10 @@ func (m *Model) Translate(vec Vector) *Model {
 	}
 	return m
 }
+
+func (m *Model) Jitter() *Model {
+	origin := Vector{0.0, 0.0, 0.0}
+	rot := Vector{0.00000001, 0.00000001, 0.00000001}
+	m.Rotate(rot, origin)
+	return m
+}
