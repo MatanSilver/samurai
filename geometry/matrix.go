@@ -3,6 +3,7 @@ package geometry
 import (
 	"errors"
 	//"fmt"
+	"math"
 )
 
 type Matrix [][]float64
@@ -31,4 +32,40 @@ func MatrixMultiply(mat1 Matrix, mat2 Matrix) Matrix {
 		}
 	}
 	return mat3
+}
+
+func MatrixEquals(mat1 Matrix, mat2 Matrix) (bool, error) {
+	var err error
+	//check dimensions
+	if len(mat1) != len(mat2) || len(mat1[0]) != len(mat2[0]) {
+		err = errors.New("Matrix dimension mismatch")
+		return false, err
+	} else {
+		for i := range mat1 {
+			for j := range mat1[0] {
+				if mat1[i][j] != mat2[i][j] {
+					return false, nil
+				}
+			}
+		}
+	}
+	return true, nil
+}
+
+func MatrixApprox(mat1 Matrix, mat2 Matrix) (bool, error) {
+	var err error
+	//check dimensions
+	if len(mat1) != len(mat2) || len(mat1[0]) != len(mat2[0]) {
+		err = errors.New("Matrix dimension mismatch")
+		return false, err
+	} else {
+		for i := range mat1 {
+			for j := range mat1[0] {
+				if math.Abs(mat1[i][j]-mat2[i][j]) > 0.00001 {
+					return false, nil
+				}
+			}
+		}
+	}
+	return true, nil
 }
