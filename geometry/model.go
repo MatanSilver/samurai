@@ -59,14 +59,14 @@ func (m *Model) GetCornerVector() Vector {
 
 func (m *Model) Rotate(rot Vector, origin Vector) *Model {
 	for key := range m.Triangles {
-		m.Triangles[key].Rotate(rot, origin)
+		go m.Triangles[key].Rotate(rot, origin) //embarrasingly parallel TODO: maybe do a worker pool
 	}
 	return m
 }
 
 func (m *Model) Translate(vec Vector) *Model {
 	for key := range m.Triangles {
-		m.Triangles[key].Translate(vec)
+		go m.Triangles[key].Translate(vec) //embarrasingly parallel TODO: maybe do a worker pool
 	}
 	return m
 }
@@ -74,6 +74,6 @@ func (m *Model) Translate(vec Vector) *Model {
 func (m *Model) Jitter() *Model {
 	origin := Vector{0.0, 0.0, 0.0}
 	rot := Vector{0.00000001, 0.00000001, 0.00000001}
-	m.Rotate(rot, origin)
+	m.Rotate(rot, origin) //potentially add a translate too?
 	return m
 }
