@@ -76,12 +76,12 @@ func (ll *LineList) InsertList(list LineList) (bool, error) {
 	return true, nil
 }
 
-func (vec *Vector) Cross(vec2 Vector) Vector {
-	return Vector{vec[1]*vec2[2] - vec[2]*vec2[1], -(vec[0]*vec2[2] - vec[2]*vec2[0]), vec[0]*vec2[1] - vec[1]*vec2[0]}
+func VectorCross(vec1 Vector, vec2 Vector) Vector {
+	return Vector{vec1[1]*vec2[2] - vec1[2]*vec2[1], -(vec1[0]*vec2[2] - vec1[2]*vec2[0]), vec1[0]*vec2[1] - vec1[1]*vec2[0]}
 }
 
-func (vec *Vector) Dot(vec2 Vector) float64 {
-	return vec[0]*vec2[0] + vec[1]*vec2[1] + vec[2]*vec2[2]
+func VectorDot(vec1 Vector, vec2 Vector) float64 {
+	return vec1[0]*vec2[0] + vec1[1]*vec2[1] + vec1[2]*vec2[2]
 }
 
 func (vec *Vector) Add(vec2 Vector) *Vector {
