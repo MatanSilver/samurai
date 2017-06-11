@@ -12,14 +12,14 @@ import (
 	"strings"
 )
 
-func ImportSTL(filename string) geometry.Model {
+func ImportSTL(filename string) *geometry.Model {
 	file, err := os.Open(filename)
 	utils.Check(err)
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	firstln := scanner.Text()
-	var m geometry.Model
+	var m *geometry.Model
 	if strings.Contains(firstln, "solid") {
 		m = ParseASCIISTL(filename)
 	} else {
@@ -29,7 +29,7 @@ func ImportSTL(filename string) geometry.Model {
 	return m
 }
 
-func ParseASCIISTL(filename string) geometry.Model {
+func ParseASCIISTL(filename string) *geometry.Model {
 	file, err := os.Open(filename)
 	utils.Check(err)
 	defer file.Close()
@@ -76,10 +76,10 @@ func ParseASCIISTL(filename string) geometry.Model {
 			triangles = nil
 		}
 	}
-	return models[0]
+	return &models[0]
 }
 
-func ParseBinarySTL(filename string) geometry.Model {
+func ParseBinarySTL(filename string) *geometry.Model {
 
 	// Reading entire STL file into memory
 	data, err := ioutil.ReadFile(filename)
@@ -109,7 +109,7 @@ func ParseBinarySTL(filename string) geometry.Model {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	m2 := geometry.Model{}
 	m2.Header = m.Header
 	m2.Count = uint64(m.Count)
@@ -125,5 +125,5 @@ func ParseBinarySTL(filename string) geometry.Model {
 		}
 		m2.Triangles = append(m2.Triangles, newtriangle)
 	}
-	return m2
+	return &m2
 }

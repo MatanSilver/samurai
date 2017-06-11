@@ -23,7 +23,7 @@ func AddTriangleToScene(scene *ln.Scene, triangle geometry.Triangle) {
 	scene.Add(ln.NewTriangle(v1, v2, v3))
 }
 
-func Render(model geometry.Model, filename string) {
+func Render(model *geometry.Model, filename string) {
 	// create a scene and add a single cube
 	scene := ln.Scene{}
 	for key := range model.Triangles {

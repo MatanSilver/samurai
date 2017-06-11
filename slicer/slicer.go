@@ -11,7 +11,7 @@ import (
 	//"gopkg.in/cheggaaa/pb.v1"
 )
 
-func Slice(filename string, model geometry.Model, conf utils.Config, save_layer_images bool) {
+func Slice(filename string, model *geometry.Model, conf utils.Config, save_layer_images bool) {
 	//model.Print()
 	//generate gcode for heating/inital things (homing, etc.)
 	highestz := model.HighestZ()
