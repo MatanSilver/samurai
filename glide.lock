@@ -1,0 +1,32 @@
+hash: 89f10536faec341483065eda1e98cd6266e704d76390df4347b9ec56d88a5058
+updated: 2017-06-11T14:17:07.500822906-04:00
+imports:
+- name: github.com/fogleman/gg
+  version: 0a834b08730b745582362c8fadcc0cf6d5ed2ab5
+- name: github.com/fogleman/ln
+  version: 12e6c6e7445909f817f1b8d5581be4255ffa1437
+  subpackages:
+  - ln
+- name: github.com/golang/freetype
+  version: bcfeb16b74e8aea9e2fe043406f2ef74b1cb0759
+  subpackages:
+  - raster
+  - truetype
+- name: github.com/llgcode/draw2d
+  version: 1286d3b2030ac9952e59c5ef29ef3cc24a8e83d5
+  subpackages:
+  - draw2dbase
+  - draw2dimg
+- name: github.com/urfave/cli
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: golang.org/x/image
+  version: d442804300f687c2fa12d7e8a146aa5db45e9caf
+  subpackages:
+  - draw
+  - font
+  - font/basicfont
+  - math/f64
+  - math/fixed
+- name: gopkg.in/yaml.v2
+  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
+testImports: []
