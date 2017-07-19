@@ -6,3 +6,4 @@ samurai
 *.gcode
 *.prof
 *.swp
+vendor/
