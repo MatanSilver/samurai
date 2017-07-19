@@ -64,8 +64,10 @@ func Slice(filename string, model *geometry.Model, conf utils.Config, save_layer
 			render.Save2DSlice(corner, linelists[iterator], "layer_images/layer_"+utils.LeftPad2Len(strconv.Itoa(iterator), "0", 4)+".png")
 		}
 		//make a list of linelists, each a complete closed loop
-		openloops := geometry.LineListToOpenLoops(linelists[iterator])
-		closedloops := geometry.CloseLoops(openloops)
+		openloops, err := geometry.LineListToOpenLoops(linelists[iterator])
+		utils.Check(err)
+		closedloops, err := geometry.CloseLoops(openloops)
+		utils.Check(err)
 		//panic("debug")
 		//generate gcode for the layer here (plane and z change)
 		epos := 0.0

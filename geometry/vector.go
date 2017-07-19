@@ -211,16 +211,17 @@ func (ll *LineList) FlipListVal() *LineList {
 	return &ll2
 }
 
-func LineListToOpenLoops(linelist LineList) []LineList {
+func LineListToOpenLoops(linelist LineList) ([]LineList, error) {
 	openloops := []LineList{}
 	for _, val := range linelist {
 		openloops = append(openloops, LineList{val})
 	}
-	return openloops
+	return openloops, nil
 }
 
-func CloseLoops(openloops []LineList) []LineList {
+func CloseLoops(openloops []LineList) ([]LineList, error) {
 	closedloops := []LineList{}
+	tries := 0
 	for len(openloops) > 0 {
 		iters := len(openloops) - 1
 		//fmt.Printf("iters: %d\n", iters)
@@ -232,6 +233,7 @@ func CloseLoops(openloops []LineList) []LineList {
 			result, err := openloops[i].InsertList(openloops[len(openloops)-1])
 			utils.Check(err)
 			if result == true { //insert current and last element
+				tries = 0
 				openloops = openloops[0 : len(openloops)-1] //cut off last element
 				//fmt.Printf("stitched together two lists\n")
 				//fmt.Printf("openloops reduced to %d elements\n", len(openloops))
@@ -251,8 +253,12 @@ func CloseLoops(openloops []LineList) []LineList {
 				}
 			} else {
 				//fmt.Printf("missed stitching\n")
+				if tries > 50 {
+					return closedloops, errors.New("unable to stitch loops")
+				}
 			}
+			tries++
 		}
 	}
-	return closedloops
+	return closedloops, nil
 }
